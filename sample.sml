@@ -47,11 +47,6 @@ val prog = CompoundStm (
     PrintStm [IdExp "b"]))
 
 (*
-  fun interp (IdExp t) (ls : id * int list) = 
-  fun interp (NumExp t) ls = t
-*)
-
-(*
   演習問題 1.1
   tree2 = insert (x, tree1) であれば、tree2 が使用されてい売る間にも tree1 が利用可能であるような、
   永続する関数型の二分探索木を実装する。
@@ -62,17 +57,15 @@ val prog = CompoundStm (
     lookup: 'a tree * key -> 'a
 *)
 
-type key = string
-
-datatype tree = LEAF | TREE of tree * key * tree
+datatype 'a tree = LEAF | TREE of 'a tree * {key:string, value:'a} * 'a tree
 
 val empty = LEAF
 
-fun insert (key, LEAF) = TREE (LEAF, key, LEAF)
-  | insert (key, TREE (l, k, r)) =
-      if key < k then TREE (insert (key, l), k, r)
-      else if key > k then TREE (l, k, insert (key, r))
-      else TREE (l, key, r)
+fun insert (elem, LEAF) = TREE (LEAF, elem, LEAF)
+  | insert (elem, TREE (l, e, r)) =
+      if (#key elem) < (#key e) then TREE (insert (elem, l), e, r)
+      else if (#key elem) > (#key e) then TREE (l, e, insert (elem, r))
+      else TREE (l, elem, r)
 
 fun member _ LEAF = false
-  | member key (TREE (l, k, r)) = (k = key) orelse (member key l) orelse (member key r)
+  | member key (TREE (l, e, r)) = ((#key e) = key) orelse (member key l) orelse (member key r)
