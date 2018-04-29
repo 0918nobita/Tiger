@@ -5,6 +5,8 @@
       - 構成要素を再利用できるように、コンパイラを多くの部分に分割する
       - 正しい抽象に至るまでの「思考ー実装ー再設計」の繰り返しによる学習経験が重要
       1.2 ツールとソフトウェア
+      - 対話的実行環境「Standard ML of New Jersey」とコンパイラ「MLton」を用いる
+      - 文と式を持ち、ループや if 文を持たない直接プログラムの言語のインタプリタの挙動を ML のプログラムでエミュレートする
       1.3 木構造のデータ構造
     第2章 字句解析 ( ソースファイルを、個々の単語あるいはトークンへと分解する )
     第3章 構文解析 ( プログラムの句構造を解析する )
@@ -19,14 +21,23 @@
     第12章 コード生成 ( 各マシン命令中の一時的な名前をマシンレジスタで置き換える )
 *)
 
-type id = string
+type id = string (* 識別子 *)
 
-datatype binop = Plus | Minus | Div
+datatype binop = Plus | Minus | Times | Div (* 2項演算子 *)
 
-datatype stm = CompoundStm of stm * stm
-             | AssignStm of id * exp
-             | PrintStm of exp list
-     and exp = IdExp of id
-             | NumExp of int
-             | OpExp of exp * binop * exp
-             | EseqExp of stm * exp
+datatype stm = CompoundStm of stm * stm (* セミコロンで区切って複数のステートメントを並べたステートメント *)
+             | AssignStm of id * exp (* 代入式 *)
+             | PrintStm of exp list (* print 式 *)
+     and exp = IdExp of id (* 識別子 *)
+             | NumExp of int (* 数値定数 *)
+             | OpExp of exp * binop * exp (* 2項演算子を用いた演算式 *)
+             | EseqExp of stm * exp (* 式の並び *)
+
+(* a := 5 + 3; b := (print [a, a - 1], 10 * a); print [b] *)
+val prog = CompoundStm (
+  AssignStm("a", OpExp(NumExp 5, Plus, NumExp 3)),
+  CompoundStm(
+    AssignStm("b",
+      EseqExp(PrintStm [IdExp "a", OpExp(IdExp "a", Minus, NumExp 1)],
+        OpExp(NumExp 10, Times, IdExp "a"))),
+    PrintStm [IdExp "b"]))
