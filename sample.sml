@@ -8,7 +8,9 @@
       - 対話的実行環境「Standard ML of New Jersey」とコンパイラ「MLton」を用いる
       - 文と式を持ち、ループや if 文を持たない直接プログラムの言語のインタプリタの挙動を ML のプログラムでエミュレートする
       - 副作用を持たないインタプリタを作成することは、表示的意味論や属性文法 ( プログラミング言語が何を行うかを記述する方法 ) についての優れた入門となる
-      - 与えられた部分式中のすべての print 文の引数の最大数を返す ML の関数 ( maxargs : stm -> int ) を書く
+      - 与えられた部分式中のすべての print 文の引数の最大数を返す ML の関数 maxargs : stm -> int を書く
+      - この言語のプログラムを「解釈」する ML の関数 interp : stm -> unit を書く
+        関数型のスタイルで書くためには、(変数, 整数) の対のリストを保持して AssignStm 毎に新しいリストを生成する
       1.3 木構造のデータ構造
     第2章 字句解析 ( ソースファイルを、個々の単語あるいはトークンへと分解する )
     第3章 構文解析 ( プログラムの句構造を解析する )
@@ -43,3 +45,8 @@ val prog = CompoundStm (
       EseqExp(PrintStm [IdExp "a", OpExp(IdExp "a", Minus, NumExp 1)],
         OpExp(NumExp 10, Times, IdExp "a"))),
     PrintStm [IdExp "b"]))
+
+(*
+  fun interp (IdExp t) (ls : id * int list) = 
+  fun interp (NumExp t) ls = t
+*)
