@@ -50,3 +50,29 @@ val prog = CompoundStm (
   fun interp (IdExp t) (ls : id * int list) = 
   fun interp (NumExp t) ls = t
 *)
+
+(*
+  演習問題 1.1
+  tree2 = insert (x, tree1) であれば、tree2 が使用されてい売る間にも tree1 が利用可能であるような、
+  永続する関数型の二分探索木を実装する。
+  1.1a 項目が見つかったなら true を返し、見つからなければ false を返す member 関数を実装せよ。
+  1.1b プログラムを拡張して、次のように項目の存否のみならずキーを束縛へ写像する関数を含むようにせよ。
+    datatype 'a tree = ...
+    insert: 'a tree * key * 'a -> 'a tree
+    lookup: 'a tree * key -> 'a
+*)
+
+type key = string
+
+datatype tree = LEAF | TREE of tree * key * tree
+
+val empty = LEAF
+
+fun insert (key, LEAF) = TREE (LEAF, key, LEAF)
+  | insert (key, TREE (l, k, r)) =
+      if key < k then TREE (insert (key, l), k, r)
+      else if key > k then TREE (l, k, insert (key, r))
+      else TREE (l, key, r)
+
+fun member _ LEAF = false
+  | member key (TREE (l, k, r)) = (k = key) orelse (member key l) orelse (member key r)
