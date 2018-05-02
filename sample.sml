@@ -57,15 +57,21 @@ val prog = CompoundStm (
     lookup: 'a tree * key -> 'a
 *)
 
-datatype 'a tree = LEAF | TREE of 'a tree * {key:string, value:'a} * 'a tree
+type 'a table = {key: string, value: 'a}
+
+datatype 'a tree = LEAF | TREE of 'a tree * 'a table * 'a tree
 
 val empty = LEAF
 
+(* insert :: ('a table, 'a tree) -> 'a tree  *)
 fun insert (elem, LEAF) = TREE (LEAF, elem, LEAF)
   | insert (elem, TREE (l, e, r)) =
       if (#key elem) < (#key e) then TREE (insert (elem, l), e, r)
       else if (#key elem) > (#key e) then TREE (l, e, insert (elem, r))
       else TREE (l, elem, r)
 
+(* member :: string -> 'a tree -> bool *)
 fun member _ LEAF = false
   | member key (TREE (l, e, r)) = ((#key e) = key) orelse (member key l) orelse (member key r)
+
+(* lookup :: ('a tree, key) -> 'a *)
